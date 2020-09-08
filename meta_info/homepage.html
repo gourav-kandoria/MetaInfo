@@ -176,6 +176,33 @@
 
       span.appendChild(btn); d1.appendChild(span);
       return d1;
+
+      }
+
+      function createSubmitButton(url) {
+        bttn = document.createElement("button")
+        bttn.type = "button"
+        bttn.className = "btn btn-success"
+        bttn.textContent = "Save Data"
+        bttn.addEventListener("click", saveData)
+        return bttn
+      }
+
+      function saveData() {
+        var lst = []
+        for(words in response_body.Keywords) {
+          res = words.split(',')
+          n_res = [];
+          for(word in res) {
+            if(word!='') n_res.push(word)
+          }
+          lst.push(n_res)
+        }
+        response_body.Keywords = lst;
+        try {
+
+        }
+        catch(err) {}
       }
 
     }
