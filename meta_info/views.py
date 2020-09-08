@@ -6,8 +6,12 @@ import requests
 import sys
 from bs4 import BeautifulSoup
 from  meta_info.helpers.getInfoObj import getInfoObj
+from django.views.decorators.http import require_http_methods
+import json
+from meta_info.models import MetaData
 
 
+@require_http_methods(["GET"])
 def index(request):
 
   file_dir = os.path.dirname(__file__)
@@ -20,6 +24,7 @@ def index(request):
 
 
 
+@require_http_methods(["GET"])
 def getMetaInfo(request, url):
   try:
     n_url = url
@@ -70,3 +75,22 @@ def getMetaInfo(request, url):
   print(f'\nfinalInfo:\n{finalInfo}')
 
   return http.JsonResponse(finalInfo)
+
+
+@require_http_methods(["POST"])
+def saveMetaInfo(request):
+
+  jsonString = request.body.decode("utf-8")
+  jsonDict = json.loads(jsonString)
+
+  kws=''
+  for word in jsonDict["Keywords"]:
+    filler = ',' if kws!='' else ''
+    kws = kws+filler+word
+
+  info = MetaData(url=jsonDict["Url"], title=jsonDict["Title"], 
+                description=jsonDict["Description"], keyWords=kws)
+
+  info.save()
+
+  return http.HttpResponse()

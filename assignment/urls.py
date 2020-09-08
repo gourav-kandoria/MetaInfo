@@ -20,5 +20,6 @@ from meta_info import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index),
-    path('get_meta_info/<path:url>/', views.getMetaInfo)
+    path('get_meta_info/<path:url>/', views.getMetaInfo),
+    path('save_meta_info/', views.saveMetaInfo)
 ]

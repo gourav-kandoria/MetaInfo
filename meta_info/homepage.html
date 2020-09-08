@@ -4,15 +4,12 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
 <script type="text/javascript">
 
-  async function get_result(url) {
+  var response_body;
 
-  }
-
-  async function getMetaInfo() {
-
+  async function doRemovingWork() {
     var ele = document.getElementById("result_table")
     if(ele) {
       ele.remove();
@@ -25,8 +22,19 @@
     if(ele) {
       ele.remove();
     }
-     
-    url = document.getElementById('url_input').value;
+    ele = document.getElementById("submit_msg")
+    if(ele) {
+      ele.remove();
+    }
+    ele = document.getElementById("submit_btn")
+    if(ele) {
+      ele.remove();
+    }
+  }
+
+  async function getMetaInfo() {
+    doRemovingWork()
+    const url = document.getElementById('url_input').value;
     var enteredCatch = false;
     try {
     if(url=='') {
@@ -46,7 +54,7 @@
     finally {
     if(enteredCatch) return;
     if(response.ok) {
-      var response_body  = await response.json()
+      response_body  = await response.json()
       if(response_body.status=="success") {
 
         var table = document.createElement("table")
@@ -123,9 +131,12 @@
 
         document.getElementById("body_container").appendChild(div).appendChild(table);
 
-        button = createSubmitButton();
-
-        document.getElementById("body_container").appendChild(button)
+        button = createSubmitButton(url);
+        divButton = document.createElement("div")
+        divButton.id = "submit_btn"
+        // divButton.style = "display: flex; align-items: center; justify-content: center"
+        divButton.appendChild(button)
+        document.getElementById("body_container").appendChild(divButton)
       }
 
       if(response_body.status=="failure") {
@@ -144,6 +155,7 @@
         var d1 = document.createElement("div") 
         d1.className = "input-group"
         var input = document.createElement("input") 
+
         input.className = "form-control"; input.type = "text";  input.disabled = true; 
         input.value = value; input.style.cursor = "auto";
         d1.appendChild(input);
@@ -188,21 +200,41 @@
         return bttn
       }
 
-      function saveData() {
+      async function saveData() {
+        response_body.Url = url
         var lst = []
-        for(words in response_body.Keywords) {
-          res = words.split(',')
-          n_res = [];
-          for(word in res) {
-            if(word!='') n_res.push(word)
+        for(i=0; i<response_body.Keywords.length; i++) {
+          res = response_body.Keywords[i].split(',')
+          for(j=0; j<res.length; j++) {
+            console.log(res[i])
+            if(res[j]!='') lst.push(res[j]) 
           }
-          lst.push(n_res)
         }
         response_body.Keywords = lst;
         try {
+          ele = document.getElementById("submit_msg")
+          if(ele) {
+            ele.remove();
+          }
+          const csrftoken = Cookies.get('csrftoken');
+          await fetch('/save_meta_info/', {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(response_body)
+            }
+          )
+          var ele = document.createElement("div")
+          ele.className = "alert alert-success"; ele.style.textAlign = "center"
+          ele.style.marginTop = "30px"; ele.id = "submit_msg"
+          ele.textContent = 'Data successfully saved!'
+          document.getElementById("body_container").appendChild(ele)
+        }
+        catch(err) {
 
         }
-        catch(err) {}
       }
 
     }
