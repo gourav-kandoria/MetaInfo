@@ -1,0 +1,236 @@
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+
+  async function get_result(url) {
+
+  }
+
+  async function getMetaInfo() {
+
+    var ele = document.getElementById("result_table")
+    if(ele) {
+      ele.remove();
+    }
+    ele = document.getElementById("submit_button")
+    if(ele) {
+      ele.remove();
+    }
+    ele = document.getElementById("error_message")
+    if(ele) {
+      ele.remove();
+    }
+     
+    url = document.getElementById('url_input').value;
+    var enteredCatch = false;
+    try {
+    if(url=='') {
+      throw Error("url can't be empty");
+    }
+    var response = await fetch('get_meta_info/'+url, {
+                    method: "GET", credentials: 'same-origin'});
+    }
+    catch(err) {
+      var msg = err.message; 
+      var ele = document.createElement("div")
+      ele.className = "alert alert-danger"; ele.style.textAlign = "center"
+      ele.style.marginTop = "30px"; ele.id = "error_message"
+      ele.textContent = `Error Occured: ${msg}`
+      document.getElementById("body_container").appendChild(ele)
+    }
+    finally {
+    if(enteredCatch) return;
+    if(response.ok) {
+      var response_body  = await response.json()
+      if(response_body.status=="success") {
+
+        var table = document.createElement("table")
+        var tableBody = document.createElement("tbody")
+
+        // Creating Result Row
+        var r1 = document.createElement("tr")
+        var cell = document.createElement("th")
+        cell.colSpan = 2;
+        var cellText = document.createElement("div")
+        cellText.style.textAlign = "center"; cellText.appendChild(document.createTextNode("Result"))
+        cell.appendChild(cellText); 
+        r1.appendChild(cell); 
+        tableBody.appendChild(r1)
+        // Result Row creation process completed
+
+        // Creating Title Row
+        r1 = document.createElement("tr")
+        cell = document.createElement("td")
+        cellText = document.createTextNode("Title")
+        cell.appendChild(cellText); r1.appendChild(cell);
+        cell = document.createElement("td")
+        cellText = createEditableFld("Title", response_body.Title);
+        cell.appendChild(cellText);
+        r1.appendChild(cell); 
+        tableBody.appendChild(r1);document.createTextNode("Keywords")
+        console.log("Table Row successfuly created")
+        // Title Row Creation Process completed      
+
+        // Creating Description Row
+        r1 = document.createElement("tr")
+        cell = document.createElement("td")
+        cellText = document.createTextNode("Description")
+        cell.appendChild(cellText); r1.appendChild(cell);
+        cell = document.createElement("td")
+        cellText = createEditableFld("Description", response_body.Description); 
+        cell.appendChild(cellText); r1.appendChild(cell);
+        cell.appendChild(cellText); r1.appendChild(cell); tableBody.appendChild(r1);
+        console.log("Description Row successfuly created")
+        // Description Row Creation Process completed 
+
+        // Creating Keywords Row
+        r1 = document.createElement("tr")
+        cell = document.createElement("td")
+        cell.rowSpan = Math.max(1,response_body.Keywords.length);
+        // cell.rowSpan = 1;
+        cellText = document.createTextNode("Keywords")
+        cell.appendChild(cellText); r1.appendChild(cell); 
+
+        if(response_body.Keywords.length!=0) {
+          var l = response_body.Keywords.length
+          cell = document.createElement("td")
+          cellText = createEditableFld("Keywords", response_body.Keywords[0], 0);
+          cell.appendChild(cellText); r1.appendChild(cell); tableBody.appendChild(r1)
+          for(var i=1; i<l; i++) {
+            r1 = document.createElement("tr")
+            cell = document.createElement("td")
+            cellText = createEditableFld("Keywords", response_body.Keywords[i], i);
+            cell.appendChild(cellText); r1.appendChild(cell); tableBody.appendChild(r1);
+          }
+        }
+        else {
+          tableBody.appendChild(r1);
+        }
+        tableBody.appendChild(r1)
+        console.log("Keywords Row successfuly created")
+        // Keyword Row Creation Process completed
+
+        table.appendChild(tableBody)
+        table.className = "table table-bordered"
+        var div = document.createElement("div")
+        div.id = "result_table" 
+        div.style.marginTop = "30px";
+
+        document.getElementById("body_container").appendChild(div).appendChild(table);
+
+        button = createSubmitButton();
+
+        document.getElementById("body_container").appendChild(button)
+      }
+
+      if(response_body.status=="failure") {
+        var msg = response_body.reason
+        var ele = document.createElement("div")
+        ele.className = "alert alert-danger"; ele.style.textAlign = "center"
+        ele.style.marginTop = "30px"; ele.id = "error_message"
+        ele.textContent = `Could not fetch meta info due to following reason:\n
+                            ${msg}
+                          `
+        document.getElementById("body_container").appendChild(ele)
+      }
+
+      function createEditableFld(argument, value, index=0) {
+        console.log("Entering the funtion")
+        var d1 = document.createElement("div") 
+        d1.className = "input-group"
+        var input = document.createElement("input") 
+        input.className = "form-control"; input.type = "text";  input.disabled = true; 
+        input.value = value; input.style.cursor = "auto";
+        d1.appendChild(input);
+        var span = document.createElement("span") 
+        span.className = "input-group-btn";
+        var btn = document.createElement("button") 
+        btn.className = "btn btn-default"; btn.type = "button";
+        btn_lable = "Edit"; 
+        var child = document.createTextNode("Edit"); btn.appendChild(child);
+        btn.addEventListener("click", function() {
+        if(btn_lable == "Edit") {
+          console.log("It entered Edit")
+          input.disabled = false;
+          btn_lable = "Done"; btn.removeChild(child);
+          child = document.createTextNode("Done"); btn.appendChild(child);
+        }
+        else {
+          if(argument=="Keywords") {
+            response_body[argument][index] = input.value;
+          }
+          else {
+            response_body[argument] = index.value;
+          }
+          input.disabled = true;
+          btn_lable = "Edit"; btn.removeChild(child);
+          child = document.createTextNode("Edit"); btn.appendChild(child);
+          console.log(input.value)
+        }
+      });
+
+      span.appendChild(btn); d1.appendChild(span);
+      return d1;
+      }
+
+    }
+    else if(!response.ok) {
+        var ele = document.createElement("div")
+        ele.className = "alert alert-danger"; ele.style.textAlign = "center"
+        ele.style.marginTop = "30px"; ele.id = "error_message"
+        ele.textContent = `Response Not Ok from server, Status Text: ${response.statusText}`
+        document.getElementById("body_container").appendChild(ele)
+    }
+    }
+  }
+
+
+</script>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-default">
+    <div style="display: flex; 
+             flex-direction: row; 
+             justify-content: center;
+             flex-wrap: wrap;"
+              >
+    <div  class="text-success" style="flex-grow: 1; text-align: center;"><h3>Metainfo</h3></div>
+    <!-- <div  style="text-align: center; 
+                margin-top: auto; 
+                margin-bottom: auto; margin-right: 10px;"> <a>Login with google</a></div>
+    </div> -->
+  </div>
+</nav>
+
+<div id="body_container" style="max-width: 800px; margin:auto">
+
+<div id="search_bar" 
+      style="display: flex; 
+             flex-direction: row; 
+             justify-content: center;
+             flex-wrap: wrap;">
+<div style=" flex-grow: 1; margin-top:15px; margin-right: 15px; min-width: 300px;">
+  <input id="url_input" class="form-control" type="url" placeholder="Enter url">
+</div>
+
+<div style=" margin-top: 15px">
+  <button  type="button", class="btn btn-success" onclick="getMetaInfo();">Get Meta Info</button>
+</div>
+
+</div>
+
+
+</div> 
+<!-- body_container closes here -->
+
+</body>
+
+</html>
