@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
   "127.0.0.1",
-  "98607df0b36b.ngrok.io"
+  "98607df0b36b.ngrok.io",
+  "https://meta-info.herokuapp.com/"
 ]
 
 
