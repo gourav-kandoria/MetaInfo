@@ -7,6 +7,7 @@ import sys
 from bs4 import BeautifulSoup
 from  meta_info.helpers.getInfoObj import getInfoObj
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import ensure_csrf_cookie 
 import json
 from meta_info.models import MetaData
 
@@ -25,6 +26,7 @@ def index(request):
 
 
 @require_http_methods(["GET"])
+@ensure_csrf_cookie
 def getMetaInfo(request, url):
   try:
     n_url = url
@@ -88,6 +90,7 @@ def saveMetaInfo(request):
       "reason": "invalid json string in the Request body"
     })
 
+  kws=''
   try:
     for word in jsonDict["Keywords"]:
       filler = ',' if kws!='' else ''
@@ -99,7 +102,8 @@ def saveMetaInfo(request):
   except KeyError as err:
     http.JsonResponse({
       "status": "failure",
-      "reason": f'expecting \"{err}\" as a key in the json but not present' 
+      "reason": f'expecting \"{err}\" as a key in the json but not present'
     })
+    print("KeyError Exception handled successfully")
 
   return http.HttpResponse()

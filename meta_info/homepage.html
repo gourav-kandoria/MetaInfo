@@ -205,7 +205,6 @@
         for(i=0; i<response_body.Keywords.length; i++) {
           res = response_body.Keywords[i].split(',')
           for(j=0; j<res.length; j++) {
-            console.log(res[i])
             if(res[j]!='') lst.push(res[j]) 
           }
         }
@@ -216,15 +215,17 @@
             ele.remove();
           }
           const csrftoken = Cookies.get('csrftoken');
-          await fetch('/save_meta_info/', {
+          var res = await fetch('/save_meta_info/', {
             method: "POST",
-            credentials: "same-origin",
             headers: {
               'X-CSRFToken': csrftoken,
             },
             body: JSON.stringify(response_body)
+            // body: {"Ram": "Ram"} 
             }
           )
+          // res_body = await res.json()
+          // console.log(`res_body: ${JSON.stringify(res_body)}`)
           var ele = document.createElement("div")
           ele.className = "alert alert-success"; ele.style.textAlign = "center"
           ele.style.marginTop = "30px"; ele.id = "submit_msg"
@@ -232,7 +233,7 @@
           document.getElementById("body_container").appendChild(ele)
         }
         catch(err) {
-
+          console.log(`error catched`)
         }
       }
 

@@ -23,11 +23,12 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = 'q)^y)jo9c^a5qo^kmhr+wr5q&l_+oz@ja!@6xy#gv1+(sev=8v'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
+CSRF_COOKIE_HOSTONLY = False 
 
 ALLOWED_HOSTS = [
-  "127.0.0.1",
+  # "127.0.0.1",
   "meta-info.herokuapp.com"
 ]
 
@@ -79,10 +80,18 @@ WSGI_APPLICATION = 'assignment.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'metainfo',
+        'USER': 'gaurav_kandoria',
+        'PASSWORD': '6ZNEJu4WGqapR36',
+        'HOST': 'db4free.net',
+        'PORT': '3306',
+    },
 }
 
 
