@@ -25,10 +25,9 @@ SECRET_KEY = 'q)^y)jo9c^a5qo^kmhr+wr5q&l_+oz@ja!@6xy#gv1+(sev=8v'
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 
-CSRF_COOKIE_HOSTONLY = False 
 
 ALLOWED_HOSTS = [
-  # "127.0.0.1",
+  "127.0.0.1",
   "meta-info.herokuapp.com"
 ]
 
