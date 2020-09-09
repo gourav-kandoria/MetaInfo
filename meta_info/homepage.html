@@ -11,24 +11,29 @@
 
   async function doRemovingWork() {
     var ele = document.getElementById("result_table")
-    if(ele) {
+    while(ele) {
       ele.remove();
+      ele = document.getElementById("result_table")
     }
     ele = document.getElementById("submit_button")
-    if(ele) {
+    while (ele) {
       ele.remove();
+      ele = document.getElementById("submit_button")
     }
     ele = document.getElementById("error_message")
-    if(ele) {
+    while(ele) {
       ele.remove();
+      ele = document.getElementById("error_message")
     }
     ele = document.getElementById("submit_msg")
-    if(ele) {
+    while(ele) {
       ele.remove();
+      ele = document.getElementById("submit_msg")
     }
     ele = document.getElementById("submit_btn")
-    if(ele) {
+    while(ele) {
       ele.remove();
+      ele = document.getElementById("submit_btn")
     }
   }
 
@@ -211,8 +216,9 @@
         response_body.Keywords = lst;
         try {
           ele = document.getElementById("submit_msg")
-          if(ele) {
+          while(ele) {
             ele.remove();
+            ele = document.getElementById("submit_msg")
           }
           const csrftoken = Cookies.get('csrftoken');
           var res = await fetch('/save_meta_info/', {
