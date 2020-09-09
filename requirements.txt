@@ -4,3 +4,4 @@ django-heroku
 beautifulsoup4
 requests
 html5lib
+mysql-python
