@@ -80,17 +80,26 @@ def getMetaInfo(request, url):
 @require_http_methods(["POST"])
 def saveMetaInfo(request):
 
-  jsonString = request.body.decode("utf-8")
-  jsonDict = json.loads(jsonString)
+  try:
+    jsonDict = json.loads(request.body)
+  except json.JSONDecodeError:
+    return http.JsonResponse({
+      "status": "failure",
+      "reason": "invalid json string in the Request body"
+    })
 
-  kws=''
-  for word in jsonDict["Keywords"]:
-    filler = ',' if kws!='' else ''
-    kws = kws+filler+word
+  try:
+    for word in jsonDict["Keywords"]:
+      filler = ',' if kws!='' else ''
+      kws = kws+filler+word
 
-  info = MetaData(url=jsonDict["Url"], title=jsonDict["Title"], 
+    info = MetaData(url=jsonDict["Url"], title=jsonDict["Title"], 
                 description=jsonDict["Description"], keyWords=kws)
+    info.save()
+  except KeyError as err:
+    http.JsonResponse({
+      "status": "failure",
+      "reason": f'expecting \"{err}\" as a key in the json but not present' 
+    })
 
-  info.save()
-  
   return http.HttpResponse()
