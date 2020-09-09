@@ -4,5 +4,5 @@ django-heroku
 beautifulsoup4
 requests
 html5lib
-configparser.ConfigParser
-mysql-python
+configparser
+mysqlclient
