@@ -39,6 +39,7 @@ def getInfoObj(soup):
   keyword_objs = soup.find_all("meta", attrs={"name": "keywords"})
 
   print(f'keyword_objs: {keyword_objs}')
+
   for keyword in keyword_objs:
     if keyword.has_attr("content"):
       filler = '' if Keywords_string=='' else ','
