@@ -11,6 +11,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 from meta_info.models import MetaData
 
+#create your views in this file
 
 @require_http_methods(["GET"])
 def index(request):
